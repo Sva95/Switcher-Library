@@ -1,4 +1,4 @@
-package com.fx.switcherexample;
+package com.fx.app;
 
 import org.junit.Test;
 

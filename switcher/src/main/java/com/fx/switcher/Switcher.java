@@ -68,7 +68,6 @@ public class Switcher extends View {
     }
 
     private void init(AttributeSet attrs) {
-
         final TypedArray typedArray = getContext().obtainStyledAttributes(attrs,
                 R.styleable.Switcher, 0, 0);
         switchBackgroundColor = typedArray.getColor(R.styleable.Switcher_switchBackgroundColor, getResources().getColor(R.color.colorPrimary));
@@ -96,7 +95,6 @@ public class Switcher extends View {
         drawRoundRect = new RectF();
     }
 
-
     @Override
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
@@ -110,44 +108,34 @@ public class Switcher extends View {
         roundSize = getViewHeight / 1.6f;
         rigthCircleRadius = getViewHeight / 3.2f;
         leftCircleRadius = getViewHeight / 11;
-    }
 
+        if (state) {
+            circleDrawRadius = rigthCircleRadius;
+            widthPaddingCircle = getViewWidth - quarterView;
+            cirlePaint.setColor(colorRigthCircle);
+            paintRoundRect.setColor(switchBackgroundColor);
+            paintCornerRoundRect.setColor(switchBackgroundColor);
+        } else {
+            circleDrawRadius = leftCircleRadius;
+            widthPaddingCircle = quarterView;
+            cirlePaint.setColor(colorLeftCircle);
+            paintRoundRect.setColor(colorRigthCircle);
+            paintCornerRoundRect.setColor(colorLeftCircle);
+        }
+    }
 
     @Override
     protected void onDraw(Canvas canvas) {
-        drawRoundRect.set(paddingCorner, paddingCorner, getWidth() - paddingCorner, getHeight() - paddingCorner);
+        super.onDraw(canvas);
 
         if (firstShow) {
-            drawSwitch(canvas);
-
-        } else {
-            drawAnimSwitch(canvas);
+            firstShow = false;
         }
-    }
-
-
-    private void drawSwitch(Canvas canvas) {
-        if (state) {
-            paintRoundRect.setColor(switchBackgroundColor);
-            paintCornerRoundRect.setColor(switchBackgroundColor);
-            cirlePaint.setColor(colorRigthCircle);
-
-            canvas.drawRoundRect(drawRoundRect, roundSize, roundSize, paintRoundRect);
-            canvas.drawRoundRect(drawRoundRect, roundSize, roundSize, paintCornerRoundRect);
-            canvas.drawCircle(getViewWidth - widthPaddingCircle, getViewHeight / 2, rigthCircleRadius, cirlePaint);
-
-        } else {
-            paintRoundRect.setColor(colorLeftCircle);
-            paintCornerRoundRect.setColor(colorLeftCircle);
-            cirlePaint.setColor(colorLeftCircle);
-
-            canvas.drawRoundRect(drawRoundRect, roundSize, roundSize, paintRoundRect);
-            canvas.drawRoundRect(drawRoundRect, roundSize, roundSize, paintCornerRoundRect);
-            canvas.drawCircle(widthPaddingCircle, getViewHeight / 2, leftCircleRadius, cirlePaint);
-        }
+        drawAnimSwitch(canvas);
     }
 
     private void drawAnimSwitch(Canvas canvas) {
+        drawRoundRect.set(paddingCorner, paddingCorner, getViewWidth - paddingCorner, getViewHeight - paddingCorner);
         canvas.drawRoundRect(drawRoundRect, roundSize, roundSize, paintRoundRect);
         canvas.drawRoundRect(drawRoundRect, roundSize, roundSize, paintCornerRoundRect);
         canvas.drawCircle(widthPaddingCircle, getViewHeight / 2, circleDrawRadius, cirlePaint);
@@ -246,23 +234,12 @@ public class Switcher extends View {
     }
 
     public boolean onTouchEvent(MotionEvent event) {
-        firstShow = false;
         switch (event.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 break;
 
             case MotionEvent.ACTION_UP:
-                if (state) {
-                    switchOff();
-                    if (onClickSwitch != null) {
-                        onClickSwitch.switchOff();
-                    }
-                } else {
-                    switchOn();
-                    if (onClickSwitch != null) {
-                        onClickSwitch.switchOn();
-                    }
-                }
+                updateState();
 
                 break;
             case MotionEvent.ACTION_MOVE:
@@ -280,9 +257,29 @@ public class Switcher extends View {
         this.onClickSwitch = onClickSwitch;
     }
 
-    public void setState(boolean state) {
-        this.state = state;
+    public boolean isState() {
+        return !state;
     }
 
+    private void updateState() {
+        if (state) {
+            switchOff();
+            if (onClickSwitch != null) {
+                onClickSwitch.switchOff();
+            }
+        } else {
+            switchOn();
+            if (onClickSwitch != null) {
+                onClickSwitch.switchOn();
+            }
+        }
+    }
 
+    public void setState(boolean state) {
+        this.state = state;
+
+        if (!firstShow) {
+            updateState();
+        }
+    }
 }

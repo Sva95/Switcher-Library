@@ -1,4 +1,4 @@
-package com.fx.switcherexample;
+package com.fx.app;
 
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
