@@ -39,7 +39,7 @@ public class Switcher extends View {
     private int colorRigthCircle;
     private int colorLeftCircle;
     private int quarterView;
-    private int animDuration = 300;
+    private int animDuration = 400;
 
     private boolean firstShow = true;
     private boolean state;
@@ -136,8 +136,8 @@ public class Switcher extends View {
 
     private void drawAnimSwitch(Canvas canvas) {
         drawRoundRect.set(paddingCorner, paddingCorner, getViewWidth - paddingCorner, getViewHeight - paddingCorner);
+        canvas.drawRoundRect(drawRoundRect, roundSize + 7, roundSize + 7, paintCornerRoundRect);
         canvas.drawRoundRect(drawRoundRect, roundSize, roundSize, paintRoundRect);
-        canvas.drawRoundRect(drawRoundRect, roundSize, roundSize, paintCornerRoundRect);
         canvas.drawCircle(widthPaddingCircle, getViewHeight / 2, circleDrawRadius, cirlePaint);
     }
 
